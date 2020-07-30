@@ -5,7 +5,7 @@
   {:provided
    {:dependencies [
      [metabase-core "1.0.0-SNAPSHOT"]
-     [com.jrt/jt400 "1.0"]
+     [net.sf.jt400/jt400 "8.5"]
    ]}
 
    :uberjar
