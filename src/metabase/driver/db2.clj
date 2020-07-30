@@ -13,7 +13,7 @@
              [sync :as sql-jdbc.sync]]
             [metabase.driver.sql.util.unprepare :as unprepare]
             [metabase.util
-             [date :as du]
+             [date-2 :as du]
              [honeysql-extensions :as hx]
              [ssh :as ssh]])
   (:import [java.sql ResultSet Types]
