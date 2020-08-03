@@ -11,7 +11,7 @@ lein install-for-building-drivers
 ### Build the driver using the newly-built metabase
 
 ```bash
-cd /path/to/teradata-driver
+cd /path/to/db2-driver-code-from-github
 lein clean
 DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=true lein uberjar
 ```
@@ -31,5 +31,5 @@ cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (i
 cd /path/to/metabase/source
 lein run
 ```
-###Don't forget to download the jt400.jar applicable to your environment from
+###Don't forget to download the jt400.jar applicable to your environment from sourceforge
 
