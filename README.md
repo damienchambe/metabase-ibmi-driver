@@ -19,10 +19,10 @@ lein clean
 DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=true lein uberjar
 ```
 ### Copy the newly built driver to your plugins dir and restart Metabase
-### along with the jt400.jar from IBM's sourceforge project page
+### along with the jt400.jar from IBM's sourceforge project page depending on your OS: https://javadoc.midrange.com/readme.html
 ```bash
 cp target/uberjar/db2.metabase-driver.jar /path/to/metabase/plugins/
-cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (in this case 8.5): Depending on your OS: https://javadoc.midrange.com/readme.html
+cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (in this case 8.5): 
 jar -jar /path/to/metabase/metabase.jar
 ```
 
