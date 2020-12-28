@@ -8,6 +8,7 @@
              [query-processor :as sql.qp]
              [util :as sql.u]]
             [metabase.driver.sql-jdbc
+             [common :as sql-jdbc.common]
              [connection :as sql-jdbc.conn]
              [execute :as sql-jdbc.execute]
              [sync :as sql-jdbc.sync]]
@@ -129,6 +130,30 @@
 
 (defmethod sql.qp/current-datetime-fn :db2 [_] now)
 
+;;; +----------------------------------------------------------------------------------------------------------------+
+;;; |                                           metabase.driver.sql date workarounds                                 |
+;;; +----------------------------------------------------------------------------------------------------------------+
+
+;; (.getObject rs i LocalDate) doesn't seem to work, nor does `(.getDate)`; ;;v0.34.x
+;; Merged from vertica.clj e sqlite.clj.
+;; Fix to Invalid data conversion: Wrong result column type for requested conversion. ERRORCODE=-4461
+(defmethod sql-jdbc.execute/read-column [:db2 Types/DATE]
+		[_ _ ^ResultSet rs _ ^Integer i]
+		  (let [s (.getString rs i)
+		        t (du/parse s)]
+		    t))
+
+(defmethod sql-jdbc.execute/read-column [:db2 Types/TIME]
+		[_ _ ^ResultSet rs _ ^Integer i]
+		  (let [s (.getString rs i)
+		        t (du/parse s)]
+		    t))
+
+(defmethod sql-jdbc.execute/read-column [:db2 Types/TIMESTAMP]
+		[_ _ ^ResultSet rs _ ^Integer i]
+		  (let [s (.getString rs i)
+		        t (du/parse s)]
+		    t))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                         metabase.driver.sql-jdbc impls                                         |
@@ -138,10 +163,20 @@
   [_ {:keys [host port dbname]
       :or   {host "localhost", port 3386, dbname ""}
       :as   details}]
-  (merge {:classname "com.ibm.as400.access.AS400JDBCDriver"   ;; must be in classpath
+  (-> (merge {:classname "com.ibm.as400.access.AS400JDBCDriver"   ;; must be in classpath
           :subprotocol "as400"
           :subname (str "//" host ":" port "/" dbname)}                    ;; :subname (str "//" host "/" dbname)}   (str "//" host ":" port "/" (or dbname db))}
-         (dissoc details :host :port :dbname)))
+         (dissoc details :host :port :dbname))
+  (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
+
+;  (defmethod sql-jdbc.conn/connection-details->spec :db2 [_ {:keys [host port db dbname]
+;                                                             :or   {host "localhost", port 50000, dbname ""}
+;                                                             :as   details}]
+;  (-> (merge {:classname   "com.ibm.db2.jcc.DB2Driver"
+;            :subprotocol "db2"
+;              :subname     (str "//" host ":" port "/" dbname ":" )}
+;             (dissoc details :host :port :dbname :ssl))
+;      (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
 
 (defmethod driver/can-connect? :db2 [driver details]
   (let [connection (sql-jdbc.conn/connection-details->spec driver (ssh/include-ssh-tunnel details))]
@@ -179,15 +214,15 @@
     (keyword "VARCHAR() FOR BIT DATA")    :type/*} database-type))
 
 (defmethod sql-jdbc.sync/excluded-schemas :db2 [_]
-  #{"SQLJ" 
-    "SYSCAT" 
-    "SYSFUN" 
-    "SYSIBMADM" 
-    "SYSIBMINTERNAL" 
-    "SYSIBMTS" 
+  #{"SQLJ"
+    "SYSCAT"
+    "SYSFUN"
+    "SYSIBMADM"
+    "SYSIBMINTERNAL"
+    "SYSIBMTS"
     "SPOOLMAIL"
-    "SYSPROC" 
-    "SYSPUBLIC" 
+    "SYSPROC"
+    "SYSPUBLIC"
     "SYSSTAT"
     "SYSTOOLS"})
 

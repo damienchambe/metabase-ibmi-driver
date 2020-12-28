@@ -25,6 +25,9 @@ driver:
           placeholder: SCHEMA NAME
     - user
     - password
+    - merge:
+        - additional-options
+        - placeholder: "trustServerCertificate=false"
   connection-properties-include-tunnel-config: true
 init:
   - step: load-namespace
