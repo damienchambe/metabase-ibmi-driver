@@ -36,5 +36,5 @@ lein run
 ```
 ## Use this additional JDBC properties to be able to use date and time
 
-```prompt=false;naming=sql;date format=iso;time format=hms;time separator=colon
+prompt=false;naming=sql;date format=iso;time format=hms;time separator=colon
 
