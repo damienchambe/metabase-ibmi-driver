@@ -130,6 +130,12 @@
 
 (defmethod sql.qp/current-datetime-fn :db2 [_] now)
 
+;; DB2 ibm i doesn't support `TRUE`/`FALSE`; use `1`/`0`, respectively; convert these booleans to numbers.
+(defmethod sql.qp/->honeysql [:db2 Boolean]
+  [_ bool]
+  (if bool 1 0))
+
+
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                           metabase.driver.sql date workarounds                                 |
 ;;; +----------------------------------------------------------------------------------------------------------------+
@@ -215,16 +221,21 @@
 
 (defmethod sql-jdbc.sync/excluded-schemas :db2 [_]
   #{"SQLJ"
+    "QSYS"
+    "QSYS2"
     "SYSCAT"
     "SYSFUN"
+    "SYSIBM"
     "SYSIBMADM"
     "SYSIBMINTERNAL"
     "SYSIBMTS"
     "SPOOLMAIL"
     "SYSPROC"
     "SYSPUBLIC"
-    "SYSSTAT"
-    "SYSTOOLS"})
+    "SYSTOOLS"
+    "SYSSTAT"  
+    "QHTTPSVR"   
+    "QUSRSYS"})
 
 (defmethod sql-jdbc.execute/set-timezone-sql :db2 [_]
   "SET SESSION TIME ZONE = %s")
