@@ -1,5 +1,5 @@
-# metabase-db2-driver
-v7r1 iSeries DB2 Driver for Metabase
+# metabase-db2-driver for ibm i
+v7r1 - v7r4 ibm i DB2 Driver for Metabase
 
 ### Prereqs: Install Metabase locally, compiled for building drivers
 
@@ -34,5 +34,7 @@ cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (i
 cd /path/to/metabase/source
 lein run
 ```
+## Use this additional JDBC properties to be able to use date and time
 
+prompt=false;naming=sql;date format=iso;time format=hms;time separator=colon
 
