@@ -120,10 +120,10 @@
                               :quarter (hsql/raw (format "current timestamp + %d months" (int (hx/* amount (hsql/raw 3)))))
                               :year    (hsql/raw (format "current timestamp + %d years" (int amount))))))
 
-(defmethod sql.qp/unix-timestamp->timestamp [:db2 :seconds] [_ _ expr]
+(defmethod sql.qp/unix-timestamp->honeysql [:db2 :seconds] [_ _ expr]
   (hx/+ (hsql/raw "timestamp('1970-01-01 00:00:00')") (hsql/raw (format "%d seconds" (int expr))))
 
-(defmethod sql.qp/unix-timestamp->timestamp [:db2 :milliseconds] [driver _ expr]
+(defmethod sql.qp/unix-timestamp->honeysql [:db2 :milliseconds] [driver _ expr]
   (hx/+ (hsql/raw "timestamp('1970-01-01 00:00:00')") (hsql/raw (format "%d seconds" (int (hx// expr 1000)))))))
 
 (def ^:private now (hsql/raw "current timestamp"))
@@ -233,8 +233,8 @@
     "SYSPROC"
     "SYSPUBLIC"
     "SYSTOOLS"
-    "SYSSTAT"  
-    "QHTTPSVR"   
+    "SYSSTAT"
+    "QHTTPSVR"
     "QUSRSYS"})
 
 (defmethod sql-jdbc.execute/set-timezone-sql :db2 [_]
