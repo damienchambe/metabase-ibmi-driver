@@ -1,4 +1,4 @@
-(defproject metabase/db2-driver "1.0.2"
+(defproject metabase/db2-driver "1.0.38"
   :min-lein-version "2.5.0"
 
   :profiles

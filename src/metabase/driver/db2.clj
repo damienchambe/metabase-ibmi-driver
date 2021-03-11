@@ -109,8 +109,8 @@
 
 (defmethod sql.qp/date [:db2 :day-of-week] [driver _ expr] (hsql/call :dayofweek expr))
 
-(defmethod driver/date-add :db2 [_ dt amount unit]
-  (hx/+ (hx/->timestamp dt) (case unit
+(defmethod sql.qp/add-interval-honeysql-form :db2 [_ hsql-form amount unit]
+  (hx/+ (hx/->timestamp hsql-form) (case unit
                               :second  (hsql/raw (format "current timestamp + %d seconds" (int amount)))
                               :minute  (hsql/raw (format "current timestamp + %d minutes" (int amount)))
                               :hour    (hsql/raw (format "current timestamp + %d hours" (int amount)))
@@ -128,7 +128,7 @@
 
 (def ^:private now (hsql/raw "current timestamp"))
 
-(defmethod sql.qp/current-datetime-fn :db2 [_] now)
+(defmethod sql.qp/current-datetime-honeysql-form :db2 [_] now)
 
 ;; DB2 ibm i doesn't support `TRUE`/`FALSE`; use `1`/`0`, respectively; convert these booleans to numbers.
 (defmethod sql.qp/->honeysql [:db2 Boolean]
