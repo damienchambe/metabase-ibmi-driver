@@ -1,8 +1,8 @@
 # Complete list of options here: https://github.com/metabase/metabase/wiki/Metabase-Plugin-Manifest-Reference
 info:
   name: Metabase AS400 DB2 Driver
-  version: 1.0.0
-  description: Allows Metabase to connect to AS400 DB2 databases.
+  version: 1.0.38
+  description: Allows Metabase to connect to IBM i DB2 databases.
 dependencies:
   - class: com.ibm.as400.access.AS400JDBCDriver
     message: >
