@@ -34,7 +34,7 @@ cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (i
 cd /path/to/metabase/source
 lein run
 ```
-## Use this additional JDBC properties to be able to use date and time
+## Use these additional JDBC properties to be able to use date and time
 
 prompt=false;naming=sql;date format=iso;time format=hms;time separator=colon
 
