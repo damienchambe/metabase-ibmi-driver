@@ -164,6 +164,10 @@
 		  (let [s (.getString rs i)
 		        t (du/parse s)]
 		    t))
+;; Avoid ERRORCODE=-4461, SQLSTATE=42815 error in SQL query when using Date type parameter.
+(s/defmethod sql/->prepared-substitution [:db2 Temporal] :- sql/PreparedStatementSubstitution
+  [_ date]
+  (params.substitution/make-stmt-subs "?" [(t/format "yyyy-MM-dd" date)]))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                         metabase.driver.sql-jdbc impls                                         |
