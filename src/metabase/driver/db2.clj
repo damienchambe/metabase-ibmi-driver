@@ -126,6 +126,10 @@
 (defmethod sql.qp/unix-timestamp->honeysql [:db2 :milliseconds] [driver _ expr]
   (hx/+ (hsql/raw "timestamp('1970-01-01 00:00:00')") (hsql/raw (format "%d seconds" (int (hx// expr 1000)))))))
 
+(defmethod sql.qp/cast-temporal-string [:db2 :type/ISO8601DateString]
+  [_driver _special_type expr]
+  (hsql/call :to_date expr "YYYY-MM-DD"))
+
 (def ^:private now (hsql/raw "current timestamp"))
 
 (defmethod sql.qp/current-datetime-honeysql-form :db2 [_] now)
