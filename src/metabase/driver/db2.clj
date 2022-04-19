@@ -1,7 +1,10 @@
 (ns metabase.driver.db2
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.tools.logging :as log]
             [honeysql.core :as hsql]
+            [java-time :as t]
             [metabase.driver :as driver]
             [metabase.driver.common :as driver.common]
             [metabase.driver.sql
@@ -12,22 +15,29 @@
              [connection :as sql-jdbc.conn]
              [execute :as sql-jdbc.execute]
              [sync :as sql-jdbc.sync]]
+            [metabase.driver.sql-jdbc.execute.legacy-impl :as legacy]
             [metabase.driver.sql.util.unprepare :as unprepare]
-            [metabase.util
-             [date-2 :as du]
-             [honeysql-extensions :as hx]
-             [ssh :as ssh]])
+            [metabase.util :as u]
+            [metabase.util.date-2 :as du]
+            [metabase.util.honeysql-extensions :as hx]
+            [metabase.util.ssh :as ssh]
+            [metabase.util.i18n :refer [trs]])
   (:import [java.sql ResultSet Types]
-           java.util.Date))
+           java.util.Date)
+  (:import [java.sql ResultSet Time Timestamp Types]
+           [java.util Calendar Date TimeZone]
+           [java.time Instant LocalDateTime OffsetDateTime OffsetTime ZonedDateTime LocalDate LocalTime]
+           metabase.util.honeysql_extensions.Literal
+           org.joda.time.format.DateTimeFormatter))
 
-(driver/register! :db2, :parent :sql-jdbc)
+(driver/register! :db2, :parent #{:sql-jdbc ::legacy/use-legacy-classes-for-read-and-set})
 
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                             metabase.driver impls                                              |
 ;;; +----------------------------------------------------------------------------------------------------------------+
 
-(defmethod driver/display-name :db2 [_] "DB2")
+(defmethod driver/display-name :db2 [_] "DB2 for i")
 
 (defmethod driver/humanize-connection-error-message :db2 [_ message]
   (condp re-matches message
@@ -126,10 +136,6 @@
 (defmethod sql.qp/unix-timestamp->honeysql [:db2 :milliseconds] [driver _ expr]
   (hx/+ (hsql/raw "timestamp('1970-01-01 00:00:00')") (hsql/raw (format "%d seconds" (int (hx// expr 1000)))))))
 
-(defmethod sql.qp/cast-temporal-string [:db2 :type/ISO8601DateString]
-  [_driver _special_type expr]
-  (hsql/call :to_date expr "YYYY-MM-DD"))
-
 (def ^:private now (hsql/raw "current timestamp"))
 
 (defmethod sql.qp/current-datetime-honeysql-form :db2 [_] now)
@@ -164,10 +170,6 @@
 		  (let [s (.getString rs i)
 		        t (du/parse s)]
 		    t))
-;; Avoid ERRORCODE=-4461, SQLSTATE=42815 error in SQL query when using Date type parameter.
-(s/defmethod sql/->prepared-substitution [:db2 Temporal] :- sql/PreparedStatementSubstitution
-  [_ date]
-  (params.substitution/make-stmt-subs "?" [(t/format "yyyy-MM-dd" date)]))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                         metabase.driver.sql-jdbc impls                                         |
@@ -183,15 +185,6 @@
          (dissoc details :host :port :dbname))
   (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
 
-;  (defmethod sql-jdbc.conn/connection-details->spec :db2 [_ {:keys [host port db dbname]
-;                                                             :or   {host "localhost", port 50000, dbname ""}
-;                                                             :as   details}]
-;  (-> (merge {:classname   "com.ibm.db2.jcc.DB2Driver"
-;            :subprotocol "db2"
-;              :subname     (str "//" host ":" port "/" dbname ":" )}
-;             (dissoc details :host :port :dbname :ssl))
-;      (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
-
 (defmethod driver/can-connect? :db2 [driver details]
   (let [connection (sql-jdbc.conn/connection-details->spec driver (ssh/include-ssh-tunnel! details))]
     (= 1 (first (vals (first (jdbc/query connection ["SELECT 1 FROM SYSIBM.SYSDUMMY1"])))))))
@@ -202,6 +195,7 @@
     :BLOB         :type/*
     :BOOLEAN      :type/Boolean
     :CHAR         :type/Text
+    :NCHAR        :type/Text
     :CLOB         :type/Text
     :DATALINK     :type/*
     :DATE         :type/Date
@@ -219,18 +213,58 @@
     :TIME         :type/Time
     :TIMESTAMP    :type/DateTime
     :VARCHAR      :type/Text
+    :NVARCHAR     :type/Text
     :VARGRAPHIC   :type/Text
     :XML          :type/Text
-    (keyword "CHAR() FOR BIT DATA")       :type/*
+    (keyword "CHAR () FOR BIT DATA")      :type/*
     (keyword "LONG VARCHAR")              :type/*
     (keyword "LONG VARCHAR FOR BIT DATA") :type/*
     (keyword "LONG VARGRAPHIC")           :type/*
-    (keyword "VARCHAR() FOR BIT DATA")    :type/*} database-type))
+    (keyword "VARCHAR () FOR BIT DATA")   :type/*} database-type))
 
 (defmethod sql-jdbc.sync/excluded-schemas :db2 [_]
   #{"SQLJ"
-    "QSYS"
+    "QCCA"
+    "QCLUSTER"
+    "QDNS"
+    "QDSNX"
+    "QFNTCPL"
+    "QFNTWT"
+    "QFPNTWE"
+    "QGDDM"
+    "QICSS"
+    "QICU"
+    "QIWS"
+    "QJRNL"
+    "QMSE"
+    "QNAVSRV"
+    "QNEWNAVSRV"
+    "QPASE"
+    "QPFRDATA"
+    "QQALIB"
+    "QRCL"
+    "QRECOVERY"
+    "QRPLOBJ"
+    "QSHELL"
+    "QSMP"
+    "QSOC"
+    "QSPL"
+    "QSR"
+    "QSRV"
+    "QSRVAGT"
+    "QSYSCGI"
+    "QSYSDIR"
+    "QSYSINC"
+    "QSYSLOCALE"
+    "QSYSNLS"    
     "QSYS2"
+    "QTEMP"
+    "QUSRBRM"
+    "QUSRDIRDB"
+    "QUSRTEMP"
+    "QUSRTOOL"
+    "QTCP"
+    "QSYS"    
     "SYSCAT"
     "SYSFUN"
     "SYSIBM"
@@ -248,6 +282,22 @@
 (defmethod sql-jdbc.execute/set-timezone-sql :db2 [_]
   "SET SESSION TIME ZONE = %s")
 
+(defn- materialized-views
+  "Fetch the Materialized Views DB2 for i"
+  [database]  
+  (log/info (trs "Fetch the Materialized Views db2 for i"))
+  (try (set (jdbc/query (sql-jdbc.conn/db->pooled-connection-spec database)
+      ["select table_schema AS schema, table_name AS name, case when table_text = '' then null else table_text end as description from qsys2.systables where table_type='M' order by 1 , 2"]))
+       (catch Throwable e
+         (log/error e (trs "Failed to fetch materialized views for DB2 for i")))))
+
+(defmethod driver/describe-database :db2
+  [driver database]
+  (-> ((get-method driver/describe-database :sql-jdbc) driver database)
+      (update :tables set/union (materialized-views database))      
+      ;;(log/info (trs "tables apres materialized: {0}" (materialized-views database)))
+      ))
+        
 ;; instead of returning a CLOB object, return the String. (#9026)
 ;; (defmethod sql-jdbc.execute/read-column [:db2 Types/CLOB] [_ _, ^ResultSet resultset, _, ^Integer i]
 ;;   (println "XXXXX read-column: " i)
