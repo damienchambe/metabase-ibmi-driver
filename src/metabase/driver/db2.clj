@@ -121,14 +121,14 @@
 
 (defmethod sql.qp/add-interval-honeysql-form :db2 [_ hsql-form amount unit]
   (hx/+ (hx/->timestamp hsql-form) (case unit
-                              :second  (hsql/raw (format "current timestamp + %d seconds" (int amount)))
-                              :minute  (hsql/raw (format "current timestamp + %d minutes" (int amount)))
-                              :hour    (hsql/raw (format "current timestamp + %d hours" (int amount)))
-                              :day     (hsql/raw (format "current timestamp + %d days" (int amount)))
-                              :week    (hsql/raw (format "current timestamp + %d days" (int (hx/* amount (hsql/raw 7)))))
-                              :month   (hsql/raw (format "current timestamp + %d months" (int amount)))
-                              :quarter (hsql/raw (format "current timestamp + %d months" (int (hx/* amount (hsql/raw 3)))))
-                              :year    (hsql/raw (format "current timestamp + %d years" (int amount))))))
+                              :second  (hsql/raw (format " + %d seconds" (int amount)))
+                              :minute  (hsql/raw (format " + %d minutes" (int amount)))
+                              :hour    (hsql/raw (format " + %d hours" (int amount)))
+                              :day     (hsql/raw (format " + %d days" (int amount)))
+                              :week    (hsql/raw (format " + %d days" (int (hx/* amount (hsql/raw 7)))))
+                              :month   (hsql/raw (format " + %d months" (int amount)))
+                              :quarter (hsql/raw (format " + %d months" (int (hx/* amount (hsql/raw 3)))))
+                              :year    (hsql/raw (format " + %d years" (int amount))))))
 
 (defmethod sql.qp/unix-timestamp->honeysql [:db2 :seconds] [_ _ expr]
   (hx/+ (hsql/raw "timestamp('1970-01-01 00:00:00')") (hsql/raw (format "%d seconds" (int expr))))
