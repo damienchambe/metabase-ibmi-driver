@@ -183,7 +183,7 @@
           :subprotocol "as400"
           :subname (str "//" host ":" port "/" dbname)}                    ;; :subname (str "//" host "/" dbname)}   (str "//" host ":" port "/" (or dbname db))}
          (dissoc details :host :port :dbname))
-  (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
+  (sql-jdbc.common/handle-additional-options details, :separator-style :semicolon)))
 
 (defmethod driver/can-connect? :db2 [driver details]
   (let [connection (sql-jdbc.conn/connection-details->spec driver (ssh/include-ssh-tunnel! details))]
