@@ -1,5 +1,7 @@
-# metabase-db2-driver for ibm i
-v7r1 - v7r4 ibm i DB2 Driver for Metabase
+# metabase-db2-driver for ibm i ("AS/400")
+v7r1 - v7r5 ibm i DB2 Driver for Metabase
+
+The driver for DB2 on windows or linux is here https://github.com/alisonrafael/metabase-db2-driver
 
 ### Prereqs: Install Metabase locally, compiled for building drivers
 
