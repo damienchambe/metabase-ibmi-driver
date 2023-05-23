@@ -1,4 +1,4 @@
-# metabase-db2-driver for ibm i ("AS/400")
+# metabase-db2-driver for ibm i ("AS/400") on Power
 v7r1 - v7r5 ibm i DB2 Driver for Metabase
 
 The driver for DB2 on windows or linux is here https://github.com/alisonrafael/metabase-db2-driver
@@ -8,17 +8,19 @@ The driver for DB2 on windows or linux is here https://github.com/alisonrafael/m
 ```bash
 cd /path/to/metabase/source
 wget desired version of metabase source from: https://github.com/metabase/metabase/releases/xxxx...
-unzip / untar
-lein install-for-building-drivers
 ```
 
-### Build the DB2 driver using the newly-built metabase as a dependency
+### Build the DB2 driver using the newly-built metabase as a dependency ( new method for version > 0.46)
 
 ```bash
-git clone this repository
-cd /path/to/db2-driver-code-from-github
-lein clean
-DEBUG=1 LEIN_SNAPSHOTS_IN_RELEASE=true lein uberjar
+export DRIVER_PATH="/path/to/metabase/source/modules/drivers/metabase-db2-driver"
+
+clojure \
+  -Sdeps "{:aliases {:db2 {:extra-deps {com.metabase/db2fori-driver {:local/root \"$DRIVER_PATH\"}}}}}"  \
+  -X:build:db2 \
+  build-drivers.build-driver/build-driver! \
+  "{:driver :db2, :project-dir \"$DRIVER_PATH\", :target-dir \"$DRIVER_PATH/target\"}"
+
 ```
 ### Copy the newly built driver to your plugins dir and restart Metabase
 ### along with the jt400.jar from IBM's sourceforge project page depending on your OS: https://javadoc.midrange.com/readme.html
@@ -28,14 +30,6 @@ cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (i
 jar -jar /path/to/metabase/metabase.jar
 ```
 
-*or:*
-
-```bash
-cp target/uberjar/db2.metabase-driver.jar /path/to/metabase/source/plugins
-cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (in this case 8.5)
-cd /path/to/metabase/source
-lein run
-```
 ## Use these additional JDBC properties to be able to use date and time and metadata column description
 
 metadata source=0;prompt=false;naming=system;date format=iso;time format=hms;time separator=colon;extended metadata=true;access=read call;remarks=system
