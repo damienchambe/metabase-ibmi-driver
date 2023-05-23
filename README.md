@@ -22,6 +22,8 @@ Build the DB2 driver using the newly-built metabase as a dependency ( new method
 ```bash
 export DRIVER_PATH="/path/to/metabase/source/modules/drivers/metabase-db2-driver"
 
+cd /path/to/metabase/source
+
 clojure \
   -Sdeps "{:aliases {:db2 {:extra-deps {com.metabase/db2fori-driver {:local/root \"$DRIVER_PATH\"}}}}}"  \
   -X:build:db2 \
