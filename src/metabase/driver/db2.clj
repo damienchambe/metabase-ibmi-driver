@@ -14,8 +14,7 @@
              [common :as sql-jdbc.common]
              [connection :as sql-jdbc.conn]
              [execute :as sql-jdbc.execute]
-             [sync :as sql-jdbc.sync]]
-            [metabase.driver.sql-jdbc.execute.legacy-impl :as legacy]
+             [sync :as sql-jdbc.sync]] 
             [metabase.driver.sql.util.unprepare :as unprepare]
             [metabase.util :as u]
             [metabase.util.date-2 :as du]
@@ -29,7 +28,7 @@
            [java.time Instant LocalDateTime OffsetDateTime OffsetTime ZonedDateTime LocalDate LocalTime] 
            org.joda.time.format.DateTimeFormatter))
 
-(driver/register! :db2, :parent #{:sql-jdbc ::legacy/use-legacy-classes-for-read-and-set})
+(driver/register! :db2, :parent #{:sql-jdbc})
 
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
@@ -151,23 +150,30 @@
 ;; (.getObject rs i LocalDate) doesn't seem to work, nor does `(.getDate)`; ;;v0.34.x
 ;; Merged from vertica.clj e sqlite.clj.
 ;; Fix to Invalid data conversion: Wrong result column type for requested conversion. ERRORCODE=-4461
+
 (defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/DATE]
-		[_ _ ^ResultSet rs _ ^Integer i]
-		  (let [s (.getString rs i)
-		        t (du/parse s)]
-		    t))
+  [_driver ^ResultSet rs _rsmeta ^Integer i]
+  (fn []
+    (when-let [s (.getString rs i)]
+      (let [t (du/parse s)]
+        (log/tracef "(.getString rs %d) [DATE] -> %s -> %s" i s t)
+        t))))
 
 (defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/TIME]
-		[_ _ ^ResultSet rs _ ^Integer i]
-		  (let [s (.getString rs i)
-		        t (du/parse s)]
-		    t))
+  [_driver ^ResultSet rs _rsmeta ^Long i]
+  (fn read-time []
+    (when-let [s (.getString rs i)]
+      (let [t (du/parse s)]
+        (log/tracef "(.getString rs %d) [TIME] -> %s -> %s" i s t)
+        t))))
 
 (defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/TIMESTAMP]
-		[_ _ ^ResultSet rs _ ^Integer i]
-		  (let [s (.getString rs i)
-		        t (du/parse s)]
-		    t))
+  [_driver ^ResultSet rs _rsmeta ^Integer i]
+  (fn []
+    (when-let [s (.getString rs i)]
+      (let [t (du/parse s)]
+        (log/tracef "(.getString rs %d) [TIMESTAMP] -> %s -> %s" i s t)
+        t))))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                         metabase.driver.sql-jdbc impls                                         |
