@@ -3,14 +3,21 @@ v7r1 - v7r5 ibm i DB2 Driver for Metabase
 
 The driver for DB2 on windows or linux is here https://github.com/alisonrafael/metabase-db2-driver
 
-### Prereqs: Install Metabase locally, compiled for building drivers
+Use the provided .jar on the release page, with the latest jtopen from IBM.
+https://github.com/IBM/JTOpen
+
+This drivers has only been tested with V7R4
+
+### Build
+
+Prereqs: Install Metabase locally, and build using metabase instructions
 
 ```bash
 cd /path/to/metabase/source
 wget desired version of metabase source from: https://github.com/metabase/metabase/releases/xxxx...
 ```
 
-### Build the DB2 driver using the newly-built metabase as a dependency ( new method for version > 0.46)
+Build the DB2 driver using the newly-built metabase as a dependency ( new method for version > 0.46)
 
 ```bash
 export DRIVER_PATH="/path/to/metabase/source/modules/drivers/metabase-db2-driver"
@@ -22,15 +29,17 @@ clojure \
   "{:driver :db2, :project-dir \"$DRIVER_PATH\", :target-dir \"$DRIVER_PATH/target\"}"
 
 ```
-### Copy the newly built driver to your plugins dir and restart Metabase
-### along with the jt400.jar from IBM's sourceforge project page depending on your OS: https://javadoc.midrange.com/readme.html
+
+Copy the newly built driver to your plugins dir and restart Metabase
+along with the jt400.jar from IBM's sourceforge project page depending on your OS: https://javadoc.midrange.com/readme.html
+
 ```bash
 cp target/uberjar/db2.metabase-driver.jar /path/to/metabase/plugins/
 cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (in this case 8.5): 
 jar -jar /path/to/metabase/metabase.jar
 ```
 
-## Use these additional JDBC properties to be able to use date and time and metadata column description
+### Use these additional JDBC properties to be able to use date and time and metadata column description
 
 metadata source=0;prompt=false;naming=system;date format=iso;time format=hms;time separator=colon;extended metadata=true;access=read call;remarks=system
 
