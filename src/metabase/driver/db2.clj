@@ -26,8 +26,7 @@
            java.util.Date)
   (:import [java.sql ResultSet Time Timestamp Types]
            [java.util Calendar Date TimeZone]
-           [java.time Instant LocalDateTime OffsetDateTime OffsetTime ZonedDateTime LocalDate LocalTime]
-           metabase.util.honeysql_extensions.Literal
+           [java.time Instant LocalDateTime OffsetDateTime OffsetTime ZonedDateTime LocalDate LocalTime] 
            org.joda.time.format.DateTimeFormatter))
 
 (driver/register! :db2, :parent #{:sql-jdbc ::legacy/use-legacy-classes-for-read-and-set})
@@ -40,27 +39,26 @@
 (defmethod driver/display-name :db2 [_] "DB2 for i")
 
 (defmethod driver/humanize-connection-error-message :db2 [_ message]
-  (condp re-matches message
+    (condp re-matches message
     #"^FATAL: database \".*\" does not exist$"
-    (driver.common/connection-error-messages :database-name-incorrect)
+    :database-name-incorrect
 
     #"^No suitable driver found for.*$"
-    (driver.common/connection-error-messages :invalid-hostname)
+    :invalid-hostname
 
     #"^Connection refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.$"
-    (driver.common/connection-error-messages :cannot-connect-check-host-and-port)
+    :cannot-connect-check-host-and-port
 
     #"^FATAL: role \".*\" does not exist$"
-    (driver.common/connection-error-messages :username-incorrect)
+    :username-incorrect
 
     #"^FATAL: password authentication failed for user.*$"
-    (driver.common/connection-error-messages :password-incorrect)
+    :password-incorrect
 
     #"^FATAL: .*$" ; all other FATAL messages: strip off the 'FATAL' part, capitalize, and add a period
     (let [[_ message] (re-matches #"^FATAL: (.*$)" message)]
       (str (str/capitalize message) \.))
-
-    #".*" ; default
+      
     message))
 
 (defmethod driver.common/current-db-time-date-formatters :db2 [_]     ;; "2019-09-14T18:03:20.679658000-00:00"
@@ -153,19 +151,19 @@
 ;; (.getObject rs i LocalDate) doesn't seem to work, nor does `(.getDate)`; ;;v0.34.x
 ;; Merged from vertica.clj e sqlite.clj.
 ;; Fix to Invalid data conversion: Wrong result column type for requested conversion. ERRORCODE=-4461
-(defmethod sql-jdbc.execute/read-column [:db2 Types/DATE]
+(defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/DATE]
 		[_ _ ^ResultSet rs _ ^Integer i]
 		  (let [s (.getString rs i)
 		        t (du/parse s)]
 		    t))
 
-(defmethod sql-jdbc.execute/read-column [:db2 Types/TIME]
+(defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/TIME]
 		[_ _ ^ResultSet rs _ ^Integer i]
 		  (let [s (.getString rs i)
 		        t (du/parse s)]
 		    t))
 
-(defmethod sql-jdbc.execute/read-column [:db2 Types/TIMESTAMP]
+(defmethod sql-jdbc.execute/read-column-thunk [:db2 Types/TIMESTAMP]
 		[_ _ ^ResultSet rs _ ^Integer i]
 		  (let [s (.getString rs i)
 		        t (du/parse s)]

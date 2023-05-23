@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
 
  :deps
- {net.sf.jt400/jt400 {:mvn/version "10.7"}}
+ {net.sf.jt400/jt400 {:mvn/version "11.2"}}
  
  :aliases
  {:oss
