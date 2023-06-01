@@ -1,10 +1,12 @@
 # metabase-db2-driver for ibm i ("AS/400") on Power
 v7r1 - v7r5 ibm i DB2 Driver for Metabase
 
-The driver for DB2 on windows or linux is here https://github.com/alisonrafael/metabase-db2-driver
+The metabase driver for DB2 LUW (Linux/Unix/Windows) is here https://github.com/alisonrafael/metabase-db2-driver
 
 Use the provided .jar on the release page, with the latest jtopen from IBM.
 https://github.com/IBM/JTOpen
+
+*Use the Java 8 version, to enable JDBC 4.2 specification*
 
 This drivers has only been tested with V7R4
 
