@@ -1,49 +1,71 @@
-# metabase-db2-driver for ibm i ("AS/400") on Power
-v7r1 - v7r5 ibm i DB2 Driver for Metabase
 
-The metabase driver for DB2 LUW (Linux/Unix/Windows) is here https://github.com/alisonrafael/metabase-db2-driver
+# Metabase Driver: DB2
 
-Use the provided .jar on the release page, with the latest jtopen from IBM.
-https://github.com/IBM/JTOpen
+DB2 for LUW (Linux, UNIX, Windows) Driver for [Metabase](https://www.metabase.com).
 
-*Use the Java 8 version, to enable JDBC 4.2 specification*
+###  Versions
+| Metabase Version | DB2 Driver | Bugs |
+| --- | --- | --- |
+| 0.51 | 1.1.51.0 ([jar](https://github.com/alisonrafael/metabase-db2-driver/releases/download/v1.1.51/db2.metabase-driver.jar)) | |
+| 0.46 | 1.1.46.2 ([jar](https://github.com/alisonrafael/metabase-db2-driver/releases/download/v1.1.46.2/db2.metabase-driver.jar)) | |
+| Older versions | See [here](https://github.com/alisonrafael/metabase-db2-driver/releases) | See release details |
 
-This drivers has only been tested with V7R4
-
-### Build
-
-Prereqs: Install Metabase locally, and build using metabase instructions
-
+###  Running Metabase application with DB2 driver plugin
+First download Metabase .jar file [here](https://metabase.com/start/other.html)  and run
 ```bash
-cd /path/to/metabase/source
-wget desired version of metabase source from: https://github.com/metabase/metabase/releases/xxxx...
+java -jar metabase.jar
+```
+The `/path/to/metabase/plugins/` directory will be created. Drop the driver in your `plugins/` directory and run metabase again. You can grab it [here](https://github.com/alisonrafael/metabase-db2-driver/releases) or build it yourself:
+
+## Building the DB2 Driver Yourself
+
+### Prerequisites
+- Java JDK 11
+- Node.js
+- Clojure
+- Yarn
+
+### Clone the Metabase project
+
+Clone the [Metabase repo](https://github.com/metabase/metabase)
+
+Inside `/path/to/metabase-master` run 
+```bash
+clojure -X:deps prep
 ```
 
-Build the DB2 driver using the newly-built metabase as a dependency ( new method for version > 0.46)
+### Clone the DB2 Metabase Driver
+
+Clone this [DB2 driver repo](https://github.com/alisonrafael/metabase-db2-driver) 
+
+Edit the driver as you want.
+
+### Compile the DB2 driver
+
+Inside `/path/to/metabase-db2-driver` run 
 
 ```bash
-export DRIVER_PATH="/path/to/metabase/source/modules/drivers/metabase-db2-driver"
-
-cd /path/to/metabase/source
-
-clojure \
-  -Sdeps "{:aliases {:db2 {:extra-deps {com.metabase/db2fori-driver {:local/root \"$DRIVER_PATH\"}}}}}"  \
-  -X:build:db2 \
-  build-drivers.build-driver/build-driver! \
-  "{:driver :db2, :project-dir \"$DRIVER_PATH\", :target-dir \"$DRIVER_PATH/target\"}"
-
+sh ./build.sh
 ```
 
-Copy the newly built driver to your plugins dir and restart Metabase
-along with the jt400.jar from IBM's sourceforge project page depending on your OS: https://javadoc.midrange.com/readme.html
+### Copy it to your plugins dir
+```bash
+cp /path/to/metabase-db2-driver/target/db2.metabase-driver.jar /path/to/metabase/plugins/
+```
+
+### Run Metabase
 
 ```bash
-cp target/uberjar/db2.metabase-driver.jar /path/to/metabase/plugins/
-cd /path/to/metabase/plugins wget sourceforge jt400 applicable driver version (in this case 8.5): 
 jar -jar /path/to/metabase/metabase.jar
 ```
 
-### Use these additional JDBC properties to be able to use date and time and metadata column description
+## Configurations
 
-metadata source=0;prompt=false;naming=system;date format=iso;time format=hms;time separator=colon;extended metadata=true;access=read call;remarks=system
+Run as follows to avoid the CharConversionException exceptions. In this way, JCC converts invalid characters to NULL instead of throwing exceptions:
 
+```bash
+java -Ddb2.jcc.charsetDecoderEncoder=3 -jar metabase.jar
+```
+
+## Thanks
+Thanks to everybody here [https://github.com/metabase/metabase/issues/1509](https://github.com/metabase/metabase/issues/1509)
