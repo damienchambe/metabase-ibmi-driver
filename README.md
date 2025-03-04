@@ -10,6 +10,8 @@ https://github.com/IBM/JTOpen
 
 This drivers has only been tested with V7R4
 
+### 05/03/2025  a new version is coming with metabase 0.53 support, in beta for the moment
+
 ### Build
 
 Prereqs: Install Metabase locally, and build using metabase instructions
