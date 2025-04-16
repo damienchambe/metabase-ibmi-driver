@@ -32,8 +32,7 @@
 
 (doseq [[feature supported?] {:connection-impersonation  false 
                               :describe-fields           true 
-                              :describe-fks              true
-                              :schemas                   true
+                              :describe-fks              true 
                               :native-parameters         false
                               :upload-with-auto-pk       true
                               :uuid-type                 false
@@ -78,22 +77,23 @@
 
 ;; Wrap a HoneySQL datetime EXPRession in appropriate forms to cast/bucket it as UNIT.
 ;; See [this page](https://www.ibm.com/developerworks/data/library/techarticle/0211yip/0211yip3.html) for details on the functions we're using.
-(defmethod sql.qp/date [:ibmi :default]        [_ _ expr] expr)
-(defmethod sql.qp/date [:ibmi :minute]         [_ _ expr] (::h2x/extract :minute expr))
-(defmethod sql.qp/date [:ibmi :minute-of-hour] [_ _ expr] (::h2x/extract :minute expr))
-(defmethod sql.qp/date [:ibmi :hour]           [_ _ expr] (::h2x/extract :hour expr))
-(defmethod sql.qp/date [:ibmi :hour-of-day]    [_ _ expr] (::h2x/extract :hour expr))
-(defmethod sql.qp/date [:ibmi :day]            [_ _ expr] (::h2x/extract :date expr))
-(defmethod sql.qp/date [:ibmi :day-of-month]   [_ _ expr] (::h2x/extract :day expr))
-(defmethod sql.qp/date [:ibmi :week]           [_ _ expr] (::h2x/extract :week expr))
-(defmethod sql.qp/date [:ibmi :month]          [_ _ expr] (::h2x/extract :month expr))
-(defmethod sql.qp/date [:ibmi :month-of-year]  [_ _ expr] (::h2x/extract :month expr))
-(defmethod sql.qp/date [:ibmi :quarter]        [_ _ expr] (::h2x/extract :quarter expr))
-(defmethod sql.qp/date [:ibmi :year]           [_ _ expr] (::h2x/extract :date expr))
-(defmethod sql.qp/date [:ibmi :week-of-year]   [_ _ expr] (::h2x/extract :week expr))
+(defmethod sql.qp/date [:ibmi :default]         [_ _ expr] expr)
+(defmethod sql.qp/date [:ibmi :minute]          [_ _ expr] (h2x/minute expr))
+;;(defmethod sql.qp/date [:ibmi :minute-of-hour]  [_ _ expr] (::h2x/extract :minute expr))
+(defmethod sql.qp/date [:ibmi :hour]            [_ _ expr] (h2x/hour expr))
+;;(defmethod sql.qp/date [:ibmi :hour-of-day]     [_ _ expr] (::h2x/extract :hour expr))
+(defmethod sql.qp/date [:ibmi :day]             [_ _ expr] (h2x/day expr))
+(defmethod sql.qp/date [:ibmi :day-of-month]    [_ _ expr] (::h2x/extract :day expr))
+(defmethod sql.qp/date [:ibmi :week]            [_ _ expr] (h2x/week expr))
+(defmethod sql.qp/date [:ibmi :month]           [_ _ expr] (h2x/month expr))
+;;(defmethod sql.qp/date [:ibmi :month-of-year]   [_ _ expr] (::h2x/extract :month expr))
+(defmethod sql.qp/date [:ibmi :quarter]         [_ _ expr] (h2x/quarter expr))
+(defmethod sql.qp/date [:ibmi :year]            [_ _ expr] (h2x/year expr))
+;;(defmethod sql.qp/date [:ibmi :week-of-year]    [_ _ expr] (h2x/week expr))
 (defmethod sql.qp/date [:ibmi :day-of-week]     [_ _ expr] (::h2x/extract :dayofweek expr))
 (defmethod sql.qp/date [:ibmi :day-of-year]     [_ _ expr] (::h2x/extract :dayofyear expr))
-(defmethod sql.qp/date [:ibmi :quarter-of-year] [_ _ expr] (::h2x/extract :quarter expr))
+;;(defmethod sql.qp/date [:ibmi :quarter-of-year] [_ _ expr] (::h2x/extract :quarter expr))
+;;(defmethod sql.qp/date [:ibmi :year-of-era]      [_ _ expr] (::h2x/year expr))
 
 (defmethod sql.qp/add-interval-honeysql-form :ibmi [_ hsql-form amount unit]
   (h2x/+ (h2x/->timestamp hsql-form) (case unit
@@ -263,7 +263,7 @@
               :sslConnection (boolean ssl)
               }
              (dissoc details :host :port :dbname :ssl))
-      (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon)))
+      (sql-jdbc.common/handle-additional-options details, :seperator-style :semicolon))) ;; todo comprendre pourquoi changer seperator en separator ne fonctionne pas
 
 (defmethod driver/can-connect? :ibmi [driver details]
   (let [connection (sql-jdbc.conn/connection-details->spec driver (ssh/include-ssh-tunnel! details))]
