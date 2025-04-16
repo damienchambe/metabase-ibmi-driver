@@ -1,6 +1,6 @@
 info:
   name: Metabase IBM DB2 for IBM i Driver
-  version: 0.53
+  version: "0.54"
   description: Allows Metabase to connect to IBM i database.
 driver:
   name: ibmi
@@ -23,7 +23,7 @@ driver:
     - advanced-options-start
     - merge:
         - additional-options
-        - placeholder: "defaultIsolationLevel=1;readOnly=true;sslConnection=true;retrieveMessagesFromServerOnGetMessage=true;"
+        - placeholder: "readOnly=true;"
     - default-advanced-options
   connection-properties-include-tunnel-config: true
 init:
