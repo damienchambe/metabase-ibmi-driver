@@ -1,6 +1,6 @@
 {:paths ["src" "resources"]
 
  :deps
- {net.sf.jt400/jt400 {:mvn/version "21.0.0"}}
+ {net.sf.jt400/jt400 {:mvn/version "21.0.3"}}
  
 }
