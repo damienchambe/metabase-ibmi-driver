@@ -1,16 +1,17 @@
 
-# Metabase Driver: DB2
+# Metabase Driver: IBM i
 
-DB2 for LUW (Linux, UNIX, Windows) Driver for [Metabase](https://www.metabase.com).
+IBM i DB2 for Power system Driver for [Metabase](https://www.metabase.com).
+
+This driver has been tested with V7R5 / JT400 21.0.3
 
 ###  Versions
-| Metabase Version | DB2 Driver | Bugs |
-| --- | --- | --- |
-| 0.51 | 1.1.51.0 ([jar](https://github.com/alisonrafael/metabase-db2-driver/releases/download/v1.1.51/db2.metabase-driver.jar)) | |
-| 0.46 | 1.1.46.2 ([jar](https://github.com/alisonrafael/metabase-db2-driver/releases/download/v1.1.46.2/db2.metabase-driver.jar)) | |
-| Older versions | See [here](https://github.com/alisonrafael/metabase-db2-driver/releases) | See release details |
+| Metabase Version | IBM iMetabase driver | IBM i OS version | jar |
+| --- | --- | --- | --- |
+| 0.51 => 0.54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download latest jar](https://github.com/alisonrafael/metabase-db2-driver/releases/)) |
+| <= 0.46 | 1.46 | 7.4<TR 7, 7.3, 7.2, 7.1 | ([download jar](https://github.com/alisonrafael/metabase-db2-driver/releases/download/v1.1.46.2/db2.metabase-driver.jar)) |
 
-###  Running Metabase application with DB2 driver plugin
+###  Running Metabase application with IBM i driver
 First download Metabase .jar file [here](https://metabase.com/start/other.html)  and run
 ```bash
 java -jar metabase.jar
@@ -20,10 +21,10 @@ The `/path/to/metabase/plugins/` directory will be created. Drop the driver in y
 ## Building the DB2 Driver Yourself
 
 ### Prerequisites
-- Java JDK 11
-- Node.js
+- Java JDK 21
+- Node.js 0.22
 - Clojure
-- Yarn
+- Yarn 1.22
 
 ### Clone the Metabase project
 
@@ -59,13 +60,6 @@ cp /path/to/metabase-db2-driver/target/db2.metabase-driver.jar /path/to/metabase
 jar -jar /path/to/metabase/metabase.jar
 ```
 
-## Configurations
-
-Run as follows to avoid the CharConversionException exceptions. In this way, JCC converts invalid characters to NULL instead of throwing exceptions:
-
-```bash
-java -Ddb2.jcc.charsetDecoderEncoder=3 -jar metabase.jar
-```
 
 ## Thanks
 Thanks to everybody here [https://github.com/metabase/metabase/issues/1509](https://github.com/metabase/metabase/issues/1509)
