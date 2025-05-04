@@ -14,6 +14,7 @@
    [metabase.driver.sql.query-processor :as sql.qp]
    [metabase.driver.sql.util :as sql.u]
    [metabase.util.date-2 :as u.date]
+   [honey.sql :as sql]
    [metabase.util.honey-sql-2 :as h2x]
    [metabase.util.log :as log]
    [metabase.util.ssh :as ssh]
@@ -76,16 +77,19 @@
 ;;; +----------------------------------------------------------------------------------------------------------------+
 
 ;; Wrap a HoneySQL datetime EXPRession in appropriate forms to cast/bucket it as UNIT.
-;; See [this page](https://www.ibm.com/developerworks/data/library/techarticle/0211yip/0211yip3.html) for details on the functions we're using.
 (defmethod sql.qp/date [:ibmi :default]         [_ _ expr] expr)
 (defmethod sql.qp/date [:ibmi :minute]          [_ _ expr] (h2x/minute expr))
 ;;(defmethod sql.qp/date [:ibmi :minute-of-hour]  [_ _ expr] (::h2x/extract :minute expr))
 (defmethod sql.qp/date [:ibmi :hour]            [_ _ expr] (h2x/hour expr))
 ;;(defmethod sql.qp/date [:ibmi :hour-of-day]     [_ _ expr] (::h2x/extract :hour expr))
-(defmethod sql.qp/date [:ibmi :day]             [_ _ expr] (h2x/day expr))
+(defmethod sql.qp/date [:ibmi :day]             [_ _ expr] expr) 
 (defmethod sql.qp/date [:ibmi :day-of-month]    [_ _ expr] (::h2x/extract :day expr))
-(defmethod sql.qp/date [:ibmi :week]            [_ _ expr] (h2x/week expr))
-(defmethod sql.qp/date [:ibmi :month]           [_ _ expr] (h2x/month expr))
+(defmethod sql.qp/date [:ibmi :week]
+  [_ _ expr]
+  (let [expr-sql (first (sql/format expr {:nested true}))]
+    [:- expr
+     [:raw (format "MOD(DAYOFWEEK(%s) + 5, 7) days" expr-sql)]]))
+(defmethod sql.qp/date [:ibmi :month]           [_ _ expr] [:first_day expr])
 ;;(defmethod sql.qp/date [:ibmi :month-of-year]   [_ _ expr] (::h2x/extract :month expr))
 (defmethod sql.qp/date [:ibmi :quarter]         [_ _ expr] (h2x/quarter expr))
 (defmethod sql.qp/date [:ibmi :year]            [_ _ expr] (h2x/year expr))
