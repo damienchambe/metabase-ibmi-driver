@@ -1,13 +1,6 @@
 {:paths ["src" "resources"]
 
  :deps
- {net.sf.jt400/jt400 {:mvn/version "11.2"}}
- 
- :aliases
- {:oss
-  ;; JDBC driver isn't GPL-compatible
-  {:replace-deps  {}
-   :replace-paths ["src" "resources"]}
- }
+ {net.sf.jt400/jt400 {:mvn/version "21.0.3"}}
  
 }
