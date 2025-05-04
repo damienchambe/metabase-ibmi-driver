@@ -20,6 +20,8 @@ The `/path/to/metabase/plugins/` directory will be created. Drop the driver in y
 
 ## Building the DB2 Driver Yourself
 
+### Build
+
 ### Prerequisites
 - Java JDK 21
 - Node.js 0.22
