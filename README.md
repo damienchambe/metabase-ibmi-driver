@@ -8,11 +8,15 @@ This driver has been tested with V7R5 / JT400 21.0.3
 ###  Versions
 | Metabase Version | IBM iMetabase driver | IBM i OS version | jar |
 | --- | --- | --- | --- |
-| 0.55 => 0.55 | TODO | 7.6, 7.5, 7.4 TR 7 | Not compatible , pending adaptations |
-| 0.51 => 0.54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download latest jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/)) |
+| 55 => 55 | TODO | 7.6, 7.5, 7.4 TR 7 | *Not compatible , pending adaptations* |
+| 51 => 54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download latest jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/)) |
 | <= 0.46 | 1.46 | 7.4<TR 7, 7.3, 7.2, 7.1 | ([download jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/download/1.0.46/db2.metabase-driver.jar)) |
 
 ###  Running Metabase application with IBM i driver
+
+This should be launched on a linux or windows server. An Ibm i OS400 partition can not launch recent metabase version because java 21 is required.  
+This could work on the recent V7R6 because java 21 is provided, but i can't test, i'm still on V7R5. IBM intends to publish java 21 for V7R5 later this year (2025).
+
 First download Metabase .jar file [here](https://metabase.com/start/other.html)  and run
 ```bash
 java -jar metabase.jar
