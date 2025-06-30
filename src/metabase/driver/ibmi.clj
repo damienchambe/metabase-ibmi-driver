@@ -17,7 +17,7 @@
    [honey.sql :as sql]
    [metabase.util.honey-sql-2 :as h2x]
    [metabase.util.log :as log]
-   [metabase.util.ssh :as ssh]
+   [metabase.driver.sql-jdbc.connection.ssh-tunnel :as ssh]
    [schema.core :as s])
   (:import [java.sql ResultSet Types]
            java.util.Date)
@@ -134,15 +134,15 @@
 
 ;; Use LIMIT OFFSET support DB2 v9.7 https://www.ibm.com/developerworks/community/blogs/SQLTips4DB2LUW/entry/limit_offset?lang=en
 ;; Maybe it could not to be necessary with the use of DB2_COMPATIBILITY_VECTOR
-(defmethod sql.qp/apply-top-level-clause [:ibmi :limit]
-  [_ _ honeysql-query {value :limit}]
-  {:select [:*]
+;;(defmethod sql.qp/apply-top-level-clause [:ibmi :limit]
+;;  [_ _ honeysql-query {value :limit}]
+;;  {:select [:*]
    ;; if `honeysql-query` doesn't have a `SELECT` clause yet (which might be the case when using a source query) fall
    ;; back to including a `SELECT *` just to make sure a valid query is produced
-   :from   [(-> (merge {:select [:*]}
-                       honeysql-query)
-                (update :select sql.u/select-clause-deduplicate-aliases))]
-   :fetch  [:raw value]})
+;;  :from   [(-> (merge {:select [:*]}
+;;                       honeysql-query)
+;;                (update :select sql.u/select-clause-deduplicate-aliases))]
+;;   :fetch  [:raw value]})
 
 (defmethod sql.qp/apply-top-level-clause [:ibmi :page]
   [driver _ honeysql-query {{:keys [items page]} :page}]
