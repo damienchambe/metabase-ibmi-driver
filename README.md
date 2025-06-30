@@ -21,7 +21,7 @@ First download Metabase .jar file [here](https://metabase.com/start/other.html) 
 ```bash
 java -jar metabase.jar
 ```
-The `/path/to/metabase/plugins/` directory will be created. Drop the driver in your `plugins/` directory and run metabase again. You can grab it [here](https://github.com/alisonrafael/metabase-db2-driver/releases) or build it yourself:
+The `/path/to/metabase/plugins/` directory will be created. Drop the driver in your `plugins/` directory and run metabase again. You can grab it [here](https://github.com/damienchambe/metabase-ibmi-driver/releases) or build it yourself:
 
 ## Building the DB2 Driver Yourself
 
@@ -36,6 +36,9 @@ The `/path/to/metabase/plugins/` directory will be created. Drop the driver in y
 ### Clone the Metabase project
 
 Clone the [Metabase repo](https://github.com/metabase/metabase)
+```bash
+git clone --depth 1 https://github.com/metabase/metabase.git
+```
 
 Inside `/path/to/metabase-master` run 
 ```bash
@@ -44,13 +47,13 @@ clojure -X:deps prep
 
 ### Clone the DB2 Metabase Driver
 
-Clone this [DB2 driver repo](https://github.com/alisonrafael/metabase-db2-driver) 
+Clone this [DB2 driver repo](https://github.com/damienchambe/metabase-ibmi-driver) 
 
 Edit the driver as you want.
 
 ### Compile the DB2 driver
 
-Inside `/path/to/metabase-db2-driver` run 
+Inside `/path/to/metabase-ibmi-driver` run 
 
 ```bash
 sh ./build.sh
@@ -58,7 +61,7 @@ sh ./build.sh
 
 ### Copy it to your plugins dir
 ```bash
-cp /path/to/metabase-db2-driver/target/db2.metabase-driver.jar /path/to/metabase/plugins/
+cp /path/to/metabase-ibmi-driver/target/ibmi.metabase-driver.jar /path/to/metabase/plugins/
 ```
 
 ### Run Metabase
