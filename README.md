@@ -8,8 +8,8 @@ This driver has been tested with V7R5 / JT400 21.0.3
 ###  Versions
 | Metabase Version | IBM iMetabase driver | IBM i OS version | jar |
 | --- | --- | --- | --- |
-| 55 => 55 | TODO | 7.6, 7.5, 7.4 TR 7 | *Not compatible , pending adaptations* |
-| 51 => 54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download latest jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/)) |
+| 55 => 55 | 1.55 | 7.6, 7.5, 7.4 TR 7 | *preliminary support* |
+| 51 => 54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download 1.54 jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/)) |
 | <= 0.46 | 1.46 | 7.4<TR 7, 7.3, 7.2, 7.1 | ([download jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/download/1.0.46/db2.metabase-driver.jar)) |
 
 ###  Running Metabase application with IBM i driver
