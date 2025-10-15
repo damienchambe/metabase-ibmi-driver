@@ -25,6 +25,21 @@ java -jar metabase.jar
 ```
 The `/path/to/metabase/plugins/` directory will be created. Drop the driver in your `plugins/` directory and run metabase again. You can grab it [here](https://github.com/damienchambe/metabase-ibmi-driver/releases) or build it yourself:
 
+
+###  Migration from <= 1.46 to newer version >= 1.55 
+
+#### Metabase migration
+Backup your metabase system database ( Hdb or other )
+Update your metabase version if needed.
+Restart to check if there is no problem. At this step there will be errors when runnning ibm i sql queries, because you haven't updated the driver.
+
+#### Driver migration
+Stop metabase
+Remove db2.metabase-driver.jar in the plugin directory. You only need the new jar : ibmi.metabase-driver.jar.
+Restart metabase your actual connection, go in database settings, you must edit your connections details and change "database type" to ibm i
+The database type as been changed from "db2" to "ibm i", to prevent conflicts if you need DB2 for LUW and Ibm i in you metabase instance.
+
+
 ## Building the DB2 Driver Yourself
 
 ### Build
