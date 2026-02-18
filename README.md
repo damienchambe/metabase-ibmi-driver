@@ -10,7 +10,7 @@ This driver is *NOT* for DB2 Unix/linux/windows. See [DB2 for LUW (Linux, UNIX, 
 ###  Versions
 | Metabase Version | IBM iMetabase driver | IBM i OS version | jar |
 | --- | --- | --- | --- |
-| 55 => 56 | 1.55 | 7.6, 7.5, 7.4 TR 7 | ([download 1.55 jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/tag/1.0.55)) |
+| 55 => 58 | 1.55 | 7.6, 7.5, 7.4 TR 7 | ([download 1.55 jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/tag/1.0.55)) |
 | 51 => 54 | 1.54 | 7.6, 7.5, 7.4 TR 7 | ([download 1.54 jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/tag/1.0.54)) |
 | <= 0.46 | 1.46 | 7.4<TR 7, 7.3, 7.2, 7.1 | ([download jar](https://github.com/damienchambe/metabase-ibmi-driver/releases/download/1.0.46/db2.metabase-driver.jar)) |
 
@@ -58,29 +58,48 @@ The database type as been changed from "db2" to "ibm i", to prevent conflicts if
 - Java JDK 21
 - Node.js 0.22
 - Clojure
+
+Warning, for ubuntu , install the official clojure app and not the one from the repositories :
+```bash
+sudo apt remove -y clojure
+sudo apt install -y curl rlwrap
+curl -O https://download.clojure.org/install/linux-install-1.11.1.1403.sh
+chmod +x linux-install-1.11.1.1403.sh
+sudo ./linux-install-1.11.1.1403.sh
+```
+
 - Yarn 1.22
 
 ### Clone the Metabase project
+
+You should putt metabase and the driver in the same directory:
+
+/yourpath/metabase
+/yourpath/metabase-ibmi-driver
 
 Clone the [Metabase repo](https://github.com/metabase/metabase)
 ```bash
 git clone --depth 1 https://github.com/metabase/metabase.git
 ```
 
-Inside `/path/to/metabase-master` run 
+Inside `/yourpath/metabase` run 
 ```bash
 clojure -X:deps prep
 ```
 
+Or read the most recent dev doc in metabase to build and launch metabase.
+
 ### Clone the DB2 Metabase Driver
 
-Clone this [DB2 driver repo](https://github.com/damienchambe/metabase-ibmi-driver) 
+Clone this [IBM i driver repo](https://github.com/damienchambe/metabase-ibmi-driver) 
+
+in 
 
 Edit the driver as you want.
 
 ### Compile the DB2 driver
 
-Inside `/path/to/metabase-ibmi-driver` run 
+Inside `/yourpath/metabase-ibmi-driver` run 
 
 ```bash
 sh ./build.sh
@@ -88,13 +107,13 @@ sh ./build.sh
 
 ### Copy it to your plugins dir
 ```bash
-cp /path/to/metabase-ibmi-driver/target/ibmi.metabase-driver.jar /path/to/metabase/plugins/
+cp /yourpath/metabase-ibmi-driver/target/ibmi.metabase-driver.jar /yourpath/metabase/plugins/
 ```
 
 ### Run Metabase
 
 ```bash
-jar -jar /path/to/metabase/metabase.jar
+jar -jar /yourpath/metabase/metabase.jar
 ```
 
 
