@@ -1,11 +1,11 @@
-(defproject metabase/db2fori-driver "1.0.42"
+(defproject metabase/db2fori-driver "1.58"
   :min-lein-version "2.5.0"
 
   :profiles
   {:provided
    {:dependencies [
      [metabase-core "1.0.0-SNAPSHOT"]
-     [net.sf.jt400/jt400 "10.7"]
+     [net.sf.jt400/jt400 "21.0.3"]
    ]}
 
    :clean-targets [:target-path "build/js/output"]

@@ -34,6 +34,13 @@ I recommend migrating the Metabase system database from HSQLDB to another databa
 
 My Metabase instance runs on Ubuntu 24.04. My system database runs on the same server with PostgreSQL and pgAdmin. I have connections to several IBM i partitions. This setup avoids loading the IBM i with hosting a Java server for Metabase.
 
+## Driver configuration
+
+The driver let you add your JDBC option, use this to be able to use date/time and fields descriptions:
+```
+prompt=false;naming=system;date format=iso;time format=hms;time separator=colon;extended metadata=true;access=read call;remarks=system
+```
+
 
 ##  Migration from <= 1.46 to newer version >= 1.55 
 
