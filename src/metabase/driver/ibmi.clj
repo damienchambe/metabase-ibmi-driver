@@ -2,6 +2,7 @@
   "Metabase IBM DB2 for IBM i Driver"
   (:require
    [clojure.java.jdbc :as jdbc]
+   [clojure.java.io :as io]
    [clojure.string :as str]
    [java-time.api :as t]
    [metabase.driver :as driver]
@@ -18,6 +19,7 @@
    [metabase.util.log :as log]
    [metabase.driver.sql-jdbc.connection.ssh-tunnel :as ssh]
    [metabase.driver.sql-jdbc.sync.describe-database :as describe]
+   [metabase.driver.sql-jdbc.sync.interface :as sql-jdbc.sync.interface]
    [schema.core :as s])
   (:import [java.sql ResultSet Types]
            java.util.Date)
@@ -29,7 +31,18 @@
 
 (set! *warn-on-reflection* true)
 
+(defn- driver-version []
+  (some->> (io/resource "metabase-plugin.yaml")
+           slurp
+           (re-find #"(?m)^\s*version:\s*\"?([^\"]+)\"?\s*$")
+           second))
+
 (driver/register! :ibmi, :parent :sql-jdbc)
+
+(log/infof "IBM i driver loaded%s"
+           (if-let [version (driver-version)]
+             (format " (version %s)" version)
+             ""))
 
 (doseq [[feature supported?] {:connection-impersonation  false
                             ;;  :describe-fields           false
@@ -376,12 +389,14 @@
 (defmethod sql-jdbc.execute/set-timezone-sql :ibmi [_]
   "SET SESSION TIME ZONE = %s")
 
-;; (defmethod driver/db-tables :ibmi
-;;   [driver metadata schema-or-nil db-name-or-nil]
-;;   (describe/jdbc-get-tables driver metadata db-name-or-nil schema-or-nil "%"
-;;                                  ["TABLE" "PARTITIONED TABLE" "VIEW" "FOREIGN TABLE" "MATERIALIZED VIEW"
-;;                                   "MATERIALIZED QUERY TABLE" "EXTERNAL TABLE" "DYNAMIC_TABLE"]))
-;; 
+(defmethod sql-jdbc.sync.interface/db-tables :ibmi
+  [driver metadata schema-or-nil db-name-or-nil] 
+  (log/infof "IBMI db-tables called driver=%s schema=%s db=%s"
+             driver schema-or-nil db-name-or-nil)
+   (describe/jdbc-get-tables driver metadata db-name-or-nil schema-or-nil "%"
+                                  ["TABLE" "PARTITIONED TABLE" "VIEW" "FOREIGN TABLE" "MATERIALIZED VIEW"
+                                   "MATERIALIZED QUERY TABLE" "EXTERNAL TABLE" "DYNAMIC_TABLE"]))
+ 
 ;; (defmethod driver/describe-database :ibmi
 ;;   [driver database]
 ;;   (sql-jdbc.execute/do-with-connection-with-options
